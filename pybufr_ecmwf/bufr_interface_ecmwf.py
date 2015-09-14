@@ -41,6 +41,9 @@ import time        # handling of date and time
 import numpy as np # import numerical capabilities
 import struct      # allow converting c datatypes and structs
 
+from shutil import rmtree
+from tempfile import mkdtemp
+
 # import the raw wrapper interface to the ECMWF BUFR library
 try:
     from . import ecmwfbufr
@@ -187,12 +190,7 @@ class BUFRInterfaceECMWF:
         
         # location for storing temporary files, include the uid
         # in the name to make sure the path is unique for each user
-        self.temp_dir = ('/tmp/pybufr_ecmwf_temporary_files_'+
-                         str(os.getuid()))
-
-        # ensure the directory needed to store temporary files is present
-        if not os.path.exists(self.temp_dir):
-            os.mkdir(self.temp_dir)
+        self.temp_dir = mkdtemp(prefix='pybufr_ecmwf_temporary_files')
 
         # path in which symlinks will be created to the BUFR tables we need
         # (note that it must be an absolute path! this is required by the
@@ -243,6 +241,12 @@ class BUFRInterfaceECMWF:
         # to store the loaded BUFR template information
         self.BufrTemplate = None
         #  #]        
+
+    def __del__(self):
+        """ Remove the temporary directory created in the __init__ method.
+        """
+        shutil.rmtree(self.temp_dir)
+        
     def get_expected_ecmwf_bufr_table_names(self,
                                             center, subcenter,
                                             LocalVersion, MasterTableVersion,
