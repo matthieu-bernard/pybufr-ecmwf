@@ -245,7 +245,7 @@ class BUFRInterfaceECMWF:
     def __del__(self):
         """ Remove the temporary directory created in the __init__ method.
         """
-        shutil.rmtree(self.temp_dir)
+        rmtree(self.temp_dir)
         
     def get_expected_ecmwf_bufr_table_names(self,
                                             center, subcenter,
